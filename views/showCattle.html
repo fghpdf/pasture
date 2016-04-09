@@ -1,0 +1,157 @@
+<%- include header.html %>
+<script type="text/javascript" src="javascripts/showCattle.js"></script>
+<!-- 需要后台填入的数据 -->
+<script type="text/javascript">
+  // 后台的 url 信息，例子：http://服务器IP/showCattle
+  window.url = "http://115.159.79.110:6060/showCattle";
+  //window.url = "http://localhost:6060/showCattle";
+  // 牧场编号
+  window.pastureId = getUrlParam('pastureId');
+  // 月
+  window.month = getUrlParam('month');
+  // 日
+  window.day = getUrlParam('day');
+  // 时间段
+  window.period = getUrlParam('period');
+
+  //获取url里的参数
+  function getUrlParam(name) {
+
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+
+    if (r != null) {
+
+      return unescape(r[2]);
+
+    }
+
+    return null;
+  }
+</script>
+<!-- 背景图 -->
+<div class="shim"></div>
+
+<div class="container wrapper">
+
+  <!-- 导航 -->
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="javascript:;">奶厅管理</a></li>
+    <li><a href="milkProduction">总奶量</a></li>
+  </ul>
+
+  <!-- 时段选择 -->
+  <div class="navgation">
+    <div class="navgation-item">牧场：</div>
+    <div class="navgation-item">
+      <select class="form-control" id="pasture" title="aaa">
+        <option>请选择牧场</option>
+        <option value="019067">百圣牧场</option>
+        <option value="016533">刺尾沟牧场</option>
+        <option value="017104">祥和乳业</option>
+        <option value="020678">瑞丰牧场</option>
+        <option value="024447">鑫园牧场</option>
+      </select>
+    </div>
+    <div class="navgation-item">日期：</div>
+    <div class="navgation-item">
+      <input type="text" class="form-control" id="datetimepicker" data-date-format="yyyy-mm-dd" style="width: 110px; margin-right: 10px;">
+    </div>
+    <div class="navgation-item">时段：</div>
+    <div class="navgation-item">
+      <select class="form-control" id="period" title="aaa">
+        <option>请选择时间段</option>
+        <option value="1">早</option>
+        <option value="2">中</option>
+        <option value="3">晚</option>
+      </select>
+    </div>
+
+    <% if(info === 'noInfo') { %>
+    <% var sumCattleEnter = 0; %>
+    <% var sumCattleLeave = 0; %>
+    <% for(var num = 0; cattleList[num] !== undefined; num++) { %>
+    <% if(cattleList[num].leaveDate) { %>
+    <%     sumCattleLeave += 1; %>
+    <% } %>
+    <% sumCattleEnter = num + 1%>
+    <% } %>
+    <div class="navgation-item">进站牛只数量：</div>
+    <div class="navgation-item">
+      <input type="text" class="form-control"  id="inNum" value="<%= sumCattleEnter %>" style="width: 50px; margin-right: 10px;">
+    </div>
+    <div class="navgation-item">出站牛只数量：</div>
+    <div class="navgation-item">
+      <input type="text" class="form-control"  id="outNum" value="<%= sumCattleLeave %>" style="width: 50px; margin-right: 10px;">
+    </div>
+    <div id="export" class="navgation-item">
+        <button class="btn btn-info" data-type="xls">导出excel</button>
+        <button class="btn btn-info" data-type="txt">导出txt</button>
+    </div>
+    <% } %>
+    <button class="btn btn-info" id="refreshData">刷新数据</button>
+  </div>
+  <!-- 表格展示 -->
+  <div class="table-responsive">
+    <table id="cattleList"  class="table table-bordered table-striped table-hover">
+      <thead>
+      <tr>
+        <th>序号</th>
+        <th>牛序号</th>
+        <th>进站时间</th>
+        <th>出站时间</th>
+        <th>持续时间</th>
+        <th>牧场</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% if(info === 'noInfo') { %>
+      <% for(var num = 0; cattleList[num] !== undefined; num++) { %>
+      <tr class="info">
+        <td><%= (num + 1) %></td>
+        <td><%= cattleList[num].cattleCoding %></td>
+        <td><%= cattleList[num].enterDate.toLocaleString() %></td>
+        <% if(cattleList[num].leaveDate) { %>
+        <td><%= cattleList[num].leaveDate.toLocaleString() %></td>
+        <% } else { %>
+        <td><%= '牛还没出去呢' %></td>
+        <% } %>
+        <% if(cattleList[num].leaveDate) { %>
+        <td><%= cattleList[num].duration + '分钟' %></td>
+        <% } else { %>
+        <td><%= '牛还没出去呢' %></td>
+        <% } %>
+        <% if(cattleList[num].pastureId === '019067') { %>
+        <td><%= '百圣牧场' %></td>
+        <%   } %>
+        <% if(cattleList[num].pastureId === '016533') { %>
+        <td><%= '刺尾沟牧场' %></td>
+        <%   } %>
+        <% if(cattleList[num].pastureId === '017104') { %>
+        <td><%= '祥和乳业' %></td>
+        <%   } %>
+        <% if(cattleList[num].pastureId === '020678') { %>
+        <td><%= '瑞丰牧场' %></td>
+        <%   } %>
+        <% if(cattleList[num].pastureId === '024447') { %>
+        <td><%= '鑫园牧场' %></td>
+        <%   } %>
+      </tr>
+      <% } %>
+
+      <% } else { %>
+      <tr class="info">
+        <td>没有信息</td>
+        <td>没有信息</td>
+        <td>没有信息</td>
+        <td>没有信息</td>
+        <td>没有信息</td>
+        <td>没有信息</td>
+      </tr>
+      <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<%- include footer.html %>
+

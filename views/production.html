@@ -1,0 +1,162 @@
+<%- include header.html %>
+
+<%
+if(info === 'noInfo') {
+   var pro = [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ];
+
+   var date = [];
+     if(token === 1 || token === '1') {
+       var calDate = productionList[0].uploadDate.getDate();
+       var listNum = 0;
+       for(var num = 0; productionList[num] !== undefined; num++) {
+         if(productionList[num].uploadDate.getDate() === calDate) {
+           pro[listNum] += parseInt(productionList[num].production);
+           date[listNum] = productionList[num].uploadDate.getFullYear()  + '/' + (productionList[num].uploadDate.getMonth()+1)  + '/' + productionList[num].uploadDate.getDate();
+         } else {
+           calDate = productionList[num].uploadDate.getDate();
+           listNum += 1;
+           pro[listNum] += parseInt(productionList[num].production);
+           date[listNum] = productionList[num].uploadDate.getFullYear()  + '/' + (productionList[num].uploadDate.getMonth()+1)  + '/' + productionList[num].uploadDate.getDate();
+         }
+       }
+     } else if(token === 2 || token === '2') {
+       var calDate = productionList[0].uploadDate.getDay();
+       var listNum = 0;
+       for(var num = 0; productionList[num] !== undefined; num++) {
+         if(productionList[num].uploadDate.getDay() === calDate) {
+           pro[listNum] += parseInt(productionList[num].production);
+           date[listNum] = '星期' + calDate;
+           } else {
+           calDate = productionList[num].uploadDate.getDay();
+           listNum += 1;
+           pro[listNum] += parseInt(productionList[num].production);
+           date[listNum] = '星期' + calDate;
+         }
+       }
+     } else if(token === 3 || token === '3') {
+       for(var num = 0; productionList[num] !== undefined; num++) {
+         pro[num] = productionList[num].production;
+         date[num] = productionList[num].uploadDate.getFullYear()  + '/' + (productionList[num].uploadDate.getMonth()+1)  + '/' + productionList[num].uploadDate.getDate() + ' '  +  productionList[num].uploadDate.getHours()+ ':' + productionList[num].uploadDate.getMinutes() + ':' +
+             productionList[num].uploadDate.getSeconds();
+       }
+   }
+}
+%>
+<script type="text/javascript" src="javascripts/production.js"></script>
+<script type="text/javascript" src="vendor/echarts-all.js"></script>
+  <!-- 需要后台填入的数据 -->
+  <script type="text/javascript">
+    var date = "<%= date %>";
+    var pro = "<%= pro %>";
+    var token = "<%= token %>";
+    // 后台的 url 信息，例子：http://服务器IP/production
+    window.url = "http://115.159.79.110:6060/milkProduction";
+    //window.url = "http://localhost:6060/milkProduction";
+    // 牧场编号
+    window.pastureId = getUrlParam('pastureId');
+    // 月，如果没有则填入 null
+    window.month = getUrlParam('month');
+    // 周，如果没有则填入 null
+    window.week = getUrlParam('week');
+    // 日，如果没有则填入 null
+    window.day = getUrlParam('day');
+    //开始时间
+    window.dateStart = getUrlParam('dateStart');
+    //结束时间
+    window.dateEnd = getUrlParam('dateEnd');
+    // 时间值，数组
+    window.uploadDate = date.split(",");
+    // 产量，数组
+    window.production = pro.split(",");
+    //用户选择的模式
+    window.token = token;
+
+    //获取url里的参数
+    function getUrlParam(name) {
+
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+      var r = window.location.search.substr(1).match(reg);
+
+      if (r != null) {
+
+        return unescape(r[2]);
+
+      }
+
+      return null;
+    }
+    function setTime(){
+      var currentTime = new Date().toLocaleString();
+      $('#htmer_time').val(currentTime);
+    }
+    setInterval(setTime,1000);
+  </script>
+
+<!-- 背景图 -->
+<div class="shim"></div>
+
+<div class="container wrapper">
+
+  <!-- 导航 -->
+  <ul class="nav nav-tabs">
+    <li><a href="showCattle">奶厅管理</a></li>
+    <li class="active"><a href="javascript:;">总奶量</a></li>
+  </ul>
+
+  <!-- 时间范围选择 -->
+  <div class="navgation">
+    <div class="navgation-item">实时时间: </div>
+    <div class="navgation-item">
+    <input type="text" class="form-control"  id="htmer_time"  style="margin-right: 10px;">
+    </div>    
+  </div>
+  <div class="navgation">
+    <div class="navgation-item">牧场：</div>
+    <div class="navgation-item">
+      <select class="form-control" id="pasture" title="aaa">
+        <option>请选择牧场</option>
+        <option value="019067">百圣牧场</option>
+        <option value="016533">刺尾沟牧场</option>
+        <option value="017104">祥和乳业</option>
+        <option value="020678">瑞丰牧场</option>
+        <option value="024447">鑫园牧场</option>
+      </select>
+    </div>
+    <div class="navgation-item">时间范围：</div>
+    <div class="navgation-item">
+      <select class="form-control" id="timeRange">
+        <option>请选择时间</option>
+        <option value="tody">当天</option>
+        <option value="week">最近一周</option>
+        <option value="month">最近一月</option>
+        <option value="custom">自定时间</option>
+      </select>
+    </div>
+    <div class="navgation-item" data-value="time" style="display: none;">开始日期：</div>
+    <div class="navgation-item">
+      <input type="text" class="form-control" style="display: none; margin-right: 10px;" id="datetimepickerStart" data-date-format="yyyy-mm-dd">
+    </div>
+    <div class="navgation-item" data-value="time" style="display: none;">结束日期：</div>
+    <div class="navgation-item">
+      <input type="text" class="form-control" style="display: none; margin-right: 10px;" id="datetimepickerEnd" data-date-format="yyyy-mm-dd">
+    </div>
+    <button class="btn btn-info" id="refreshData">刷新数据</button>
+  </div>
+
+  <!-- 画图表的框，高度可自定义，详见：js/production.js#画图 -->
+  <div id="chart" style="height: 500px;"></div>
+
+</div>
+
+<%- include footer.html %>
