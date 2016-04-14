@@ -61,7 +61,8 @@ if(info === 'noInfo') {
     var pro = "<%= pro %>";
     var token = "<%= token %>";
     // 后台的 url 信息，例子：http://服务器IP/production
-    window.url = "http://115.159.79.110:6060/milkProduction";
+	  window.url = "http://120.193.154.66:6060/milkProduction";
+    //window.url = "http://115.159.79.110:6060/milkProduction";
     //window.url = "http://localhost:6060/milkProduction";
     // 牧场编号
     window.pastureId = getUrlParam('pastureId');
@@ -110,7 +111,7 @@ if(info === 'noInfo') {
 
   <!-- 导航 -->
   <ul class="nav nav-tabs">
-    <li><a href="showCattle">奶厅管理</a></li>
+    <li><a href="/showCattle">奶厅管理</a></li>
     <li class="active"><a href="javascript:;">总奶量</a></li>
   </ul>
 

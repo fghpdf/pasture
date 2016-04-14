@@ -29,7 +29,8 @@ net.createServer(function(sock) {
             }
         }
         var options = {
-            url: 'http://115.159.79.110:6060/milkUpload',
+            url: 'http://120.193.154.66:6060/milkUpload',
+            //url: 'http://115.159.79.110:6060/milkUpload',
             //url: 'http://localhost:6060/milkUpload',
             headers: {
                 'Content-Type': 'application/json',

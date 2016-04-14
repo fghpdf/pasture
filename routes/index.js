@@ -99,7 +99,7 @@ router.post('/cattleLeave', function(req, res, next) {
                     if (model_fetch) {
                         var cattleId = model_fetch.get('id');
                         var enterDate = model_fetch.get('enterDate');
-                        var duration = nowTime.getMinutes() - enterDate.getMinutes();
+                        var duration = getDuration(enterDate);
                         new model.Cattle({id: cattleId}).save({
                             leaveDate: nowTime,
                             duration: duration
@@ -348,6 +348,22 @@ function getProduction(production_16, callback) {
         production += asc[char];
     }
     callback(production);
+}
+
+function getDuration(enterDate) {
+    var duration;
+    var nowTime = new Date();
+    var dateSur = nowTime.getTime()-enterDate.getTime();
+
+    var leave1 = dateSur%(24*3600*1000);    //计算天数后剩余的毫秒数
+    var hours = Math.floor(leave1/(3600*1000));
+
+    var minutes = Math.floor((leave1%(3600*1000))/(60*1000));
+
+    duration = hours * 60 + minutes;
+
+    return duration;
+
 }
 
 module.exports = router;
